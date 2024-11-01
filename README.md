@@ -1,6 +1,6 @@
 # Prediction Market
 
-This repository contains smart contracts for a decentralized, cross-chain prediction market. The project utilizes **UMA's Optimistic Oracle V3** on Ethereum (Sepolia) for secure data resolution and **Kaia** for managing user interactions and bets. The architecture leverages an off-chain relayer to handle cross-chain communication.
+This repository contains smart contracts for a decentralized, cross-chain prediction market. The project utilizes **UMA's Optimistic Oracle V3** on Ethereum (Sepolia) for secure data resolution and **Kaia Blockchain** for managing user interactions and bets. The architecture leverages an off-chain relayer to handle cross-chain communication.
 
 ## Project Structure
 
