@@ -4,3 +4,6 @@
 [submodule "blockchain/lib/protocol"]
 	path = blockchain/lib/protocol
 	url = https://github.com/UMAprotocol/protocol
+[submodule "blockchain/lib/openzeppelin-contracts"]
+	path = blockchain/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
