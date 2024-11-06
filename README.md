@@ -7,6 +7,7 @@ This repository contains smart contracts for a decentralized, cross-chain predic
 - **src/**: Contains the main smart contracts:
   - `PredictionMarket.sol`: The main prediction market contract deployed on Kaia. Users place bets on outcomes, and an off-chain relay resolves the outcome based on UMA’s Oracle.
   - `OracleInteraction.sol`: Deployed on Ethereum (Sepolia), this contract interacts with UMA's Optimistic Oracle to submit and settle assertions.
+  - `OptimisticOracleV3Interface.sol`: This is the UMA Protocol optimistic oracle smart contract for disputing and asserting data from Kaia's prediction market
 - **script/**: Deployment scripts for each contract using Foundry.
 - **test/**: Test scripts for simulating contract functionality.
 
