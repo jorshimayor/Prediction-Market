@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 /// @title PredictionMarket
 /// @notice A simple prediction market where users can bet on a "Yes" or "No" outcome.
-/// @dev Utilizes an external oracle for resolving the market outcome.
+/// @dev Utilizes UMA optimistic oracle for resolving the market outcome.
 contract PredictionMarket {
     
     // State variables
@@ -14,10 +14,10 @@ contract PredictionMarket {
     bool public outcome;             // The final outcome of the market: true (Yes) or false (No).
 
     // Mappings to track user bets and total bets
-    mapping(address => uint) public betsOnYes;  // Amount of ether each user has bet on "Yes".
-    mapping(address => uint) public betsOnNo;   // Amount of ether each user has bet on "No".
-    uint public totalBetsOnYes;                 // Total amount of ether bet on "Yes".
-    uint public totalBetsOnNo;                  // Total amount of ether bet on "No".
+    mapping(address => uint) public betsOnYes;  // Amount of kaia each user has bet on "Yes".
+    mapping(address => uint) public betsOnNo;   // Amount of kaia each user has bet on "No".
+    uint public totalBetsOnYes;                 // Total amount of kaia bet on "Yes".
+    uint public totalBetsOnNo;                  // Total amount of kaia bet on "No".
 
     // Events
     event RequestOracleData(uint256 timestamp, string question);  // Emitted when oracle data is requested.
