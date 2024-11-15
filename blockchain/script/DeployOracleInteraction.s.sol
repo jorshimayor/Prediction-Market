@@ -15,7 +15,7 @@ contract DeployOracleInteraction is Script {
 
         vm.stopBroadcast();
 
-        console.log("OracleInteraction deployed at:", address(oracleInteraction));
+        // console.log("OracleInteraction deployed at:", address(oracleInteraction));
 
     }
 }

@@ -5,13 +5,19 @@ pragma solidity ^0.8.0;
 /// @notice A simple prediction market where users can bet on a "Yes" or "No" outcome.
 /// @dev Utilizes UMA optimistic oracle for resolving the market outcome.
 contract PredictionMarket {
+    //Errors
+    error MarketMustResolveBeforeWithdrawing();
+    error MarketMustResolveBeforeClaimingWinnings();
+    error MarketAlreadyResolved();
+    error BetAmountMustBeGreaterThanZero();
+    error BetOutcomeMustBeYesOrNo();
     
     // State variables
-    address public owner;            // Owner of the contract, responsible for managing key functions.
-    address public oracleRelayer;    // Address of the oracle relayer responsible for setting the market outcome.
-    uint public deadline;            // Deadline for betting, after which no more bets are allowed.
-    bool public marketResolved;      // Indicates whether the market outcome has been resolved.
-    bool public outcome;             // The final outcome of the market: true (Yes) or false (No).
+    address public s_owner;            // Owner of the contract, responsible for managing key functions.
+    address public s_oracleRelayer;    // Address of the oracle relayer responsible for setting the market outcome.
+    uint public s_deadline;            // Deadline for betting, after which no more bets are allowed.
+    bool public s_marketResolved;      // Indicates whether the market outcome has been resolved.
+    bool public s_outcome;             // The final outcome of the market: true (Yes) or false (No).
 
     // Mappings to track user bets and total bets
     mapping(address => uint) public betsOnYes;  // Amount of kaia each user has bet on "Yes".
@@ -25,22 +31,22 @@ contract PredictionMarket {
 
     // Modifiers
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can call");
+        require(msg.sender == s_owner, "Only owner can call");
         _;
     }
 
     modifier onlyRelayer() {
-        require(msg.sender == oracleRelayer, "Only relayer can call");
+        require(msg.sender == s_oracleRelayer, "Only relayer can call");
         _;
     }
 
     modifier beforeDeadline() {
-        require(block.timestamp < deadline, "Betting period over");
+        require(block.timestamp < s_deadline, "Betting period over");
         _;
     }
 
     modifier afterDeadline() {
-        require(block.timestamp >= deadline, "Betting period ongoing");
+        require(block.timestamp >= s_deadline, "Betting period ongoing");
         _;
     }
 
@@ -48,15 +54,17 @@ contract PredictionMarket {
     /// @param _bettingDuration Duration in seconds for which betting is allowed.
     /// @param _oracleRelayer Address of the oracle relayer.
     constructor(uint _bettingDuration, address _oracleRelayer) {
-        owner = msg.sender;
-        deadline = block.timestamp + _bettingDuration;
-        oracleRelayer = _oracleRelayer;
+        s_owner = msg.sender;
+        s_deadline = block.timestamp + _bettingDuration;
+        s_oracleRelayer = _oracleRelayer;
     }
 
     /// @notice Allows users to place a bet on "Yes".
     /// @dev Only callable before the betting deadline.
     function betYes() external payable beforeDeadline {
-        require(msg.value > 0, "Bet amount must be greater than zero");
+        if(msg.value > 0){
+            revert BetAmountMustBeGreaterThanZero();
+        }
         betsOnYes[msg.sender] += msg.value;
         totalBetsOnYes += msg.value;
     }
@@ -64,7 +72,9 @@ contract PredictionMarket {
     /// @notice Allows users to place a bet on "No".
     /// @dev Only callable before the betting deadline.
     function betNo() external payable beforeDeadline {
-        require(msg.value > 0, "Bet amount must be greater than zero");
+        if(msg.value > 0){
+            revert BetAmountMustBeGreaterThanZero();
+        }
         betsOnNo[msg.sender] += msg.value;
         totalBetsOnNo += msg.value;
     }
@@ -80,16 +90,20 @@ contract PredictionMarket {
     /// @param _outcome The outcome of the market: true for "Yes", false for "No".
     /// @dev Only callable by the oracle relayer and only once per market.
     function resolveMarket(bool _outcome) external onlyRelayer {
-        require(!marketResolved, "Market already resolved");
-        outcome = _outcome;
-        marketResolved = true;
+        if(s_marketResolved) {
+            revert MarketAlreadyResolved();
+        }
+        s_outcome = _outcome;
+        s_marketResolved = true;
         emit MarketResolved(outcome);
     }
 
     /// @notice Allows users to claim their winnings based on the market outcome.
     /// @dev Users can claim their winnings after the market is resolved.
     function claimWinnings() external afterDeadline {
-        require(marketResolved, "Market not resolved");
+        if (!s_marketResolved) {
+            revert MarketMustResolveBeforeClaimingWinnings();
+        }
         uint winnings;
 
         if (outcome) {
@@ -108,7 +122,9 @@ contract PredictionMarket {
     /// @notice Allows the owner to withdraw unclaimed funds after the market is resolved.
     /// @dev Ensures that the market outcome has been resolved before withdrawing funds.
     function withdrawUnclaimedFunds() external onlyOwner {
-        require(marketResolved, "Market must be resolved before withdrawing");
+        if (s_marketResolved) {
+            revert MarketMustResolveBeforeWithdrawing();
+        }
         payable(owner).transfer(address(this).balance);
     }
 }

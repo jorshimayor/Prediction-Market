@@ -5,18 +5,18 @@ import "forge-std/Script.sol";
 import "../src/PredictionMarket.sol";
 
 contract DeployPredictionMarket is Script {
-        function run() external {
+    function run() external {
         vm.startBroadcast();
-        
+
         address oracleRelayer = 0xEEE5BEC08C3fd98535183c247931FFC439778A7C;
-        uint bettingDuration = 1 weeks;
+        uint bettingDuration = 7 days;
 
         new PredictionMarket(bettingDuration, oracleRelayer);
 
         vm.stopBroadcast();
 
-        console.log("PredictionMarket deployed at:", address(predictionMarket));
-
+        // console.log("PredictionMarket deployed at:", address(predictionMarket));
     }
 }
-// forge script script/DeployPredictionMarket.s.sol --rpc-url $KAIA_RPC_URL --private-key $PRIVATE_KEY --broadcast
+
+// forge create script/DeployPredictionMarket.s.sol --rpc-url $KAIA_RPC_URL --private-key $PRIVATE_KEY --broadcast
